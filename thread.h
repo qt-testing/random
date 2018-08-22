@@ -23,7 +23,7 @@ public slots:
 signals:
 	void started();
 	void stopped();
-	void workComplete();
+	void finished();
 
 	void signalStart();
 	void signalStop();
@@ -53,6 +53,7 @@ public slots:
 
 signals:
 	void stopped();
+	void finished();
 
 protected:
 	QMutex m_mutex;

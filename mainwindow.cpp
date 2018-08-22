@@ -46,6 +46,11 @@ void MainWindow::onStopButton()
 	m_pThread->stop();
 }
 
+void MainWindow::onGenerateButton()
+{
+	m_pRandomThread->start();
+}
+
 void MainWindow::onThreadStarted()
 {
 	ui->pushButtonStart->setEnabled(false);
@@ -64,6 +69,30 @@ void MainWindow::onThreadStopped()
 	QPalette palette = ui->pushButtonLight->palette();
 	palette.setColor(QPalette::Button, QColor(Qt::red));
 	ui->pushButtonLight->setPalette(palette);
+}
+
+void MainWindow::onRandomThreadStarted()
+{
+	ui->pushButtonGenerate->setEnabled(false);
+}
+
+void MainWindow::onRandomThreadFinished()
+{
+	ui->pushButtonGenerate->setEnabled(true);
+
+	m_pChart->removeAllSeries();
+
+	QLineSeries *series = new QLineSeries;
+
+	std::lock_guard<std::mutex> lock(m_pRandomThread->mutex());
+	const std::map<int, int> &map = m_pRandomThread->data();
+
+	for (auto item : map) {
+		series->append(item.first, item.second);
+	}
+
+	m_pChart->addSeries(series);
+	m_pChart->createDefaultAxes();
 }
 
 void MainWindow::init()
@@ -86,9 +115,18 @@ void MainWindow::connect()
 	QObject::connect(ui->pushButtonStop, SIGNAL(clicked(bool)),
 					 SLOT(onStopButton()));
 
+	QObject::connect(ui->pushButtonGenerate, SIGNAL(clicked(bool)),
+					 SLOT(onGenerateButton()));
+
 	QObject::connect(m_pThread, SIGNAL(started()),
 					 SLOT(onThreadStarted()));
 
 	QObject::connect(m_pThread, SIGNAL(stopped()),
 					 SLOT(onThreadStopped()));
+
+	QObject::connect(m_pRandomThread, SIGNAL(started()),
+					 SLOT(onRandomThreadStarted()));
+
+	QObject::connect(m_pRandomThread, SIGNAL(finished()),
+					 SLOT(onRandomThreadFinished()));
 }

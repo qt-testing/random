@@ -45,11 +45,20 @@ void Thread::connect()
 	QObject::connect(m_pWorker, SIGNAL(stopped()),
 					 SLOT(onWorkerFinished()));
 
+	QObject::connect(m_pWorker, SIGNAL(finished()),
+					 SLOT(onWorkerFinished()));
+
+	QObject::connect(m_pWorker, SIGNAL(finished()),
+					 this, SIGNAL(finished()));
+
 	QObject::connect(m_pThread, SIGNAL(started()),
 					 SIGNAL(started()));
 
 	QObject::connect(m_pThread, SIGNAL(finished()),
 					 SIGNAL(stopped()));
+
+	QObject::connect(this, SIGNAL(signalStart()),
+					 m_pWorker, SLOT(start()));
 }
 
 /*------- Worker ------------------------------------------------------------*/

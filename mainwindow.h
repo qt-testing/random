@@ -24,8 +24,11 @@ public:
 private slots:
 	void onStartButton();
 	void onStopButton();
+	void onGenerateButton();
 	void onThreadStarted();
 	void onThreadStopped();
+	void onRandomThreadStarted();
+	void onRandomThreadFinished();
 
 private:
 	Ui::MainWindow *ui;
